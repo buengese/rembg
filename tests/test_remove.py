@@ -8,23 +8,24 @@ from rembg import new_session, remove
 
 here = Path(__file__).parent.resolve()
 
+
 def test_remove():
     kwargs = {
         "sam": {
-            "anime-girl-1" : {
-                "sam_prompt" :[{"type": "point", "data": [400, 165], "label": 1}],
+            "anime-girl-1": {
+                "sam_prompt": [{"type": "point", "data": [400, 165], "label": 1}],
             },
 
-            "car-1" : {
-                "sam_prompt" :[{"type": "point", "data": [250, 200], "label": 1}],
+            "car-1": {
+                "sam_prompt": [{"type": "point", "data": [250, 200], "label": 1}],
             },
 
-            "cloth-1" : {
-                "sam_prompt" :[{"type": "point", "data": [370, 495], "label": 1}],
+            "cloth-1": {
+                "sam_prompt": [{"type": "point", "data": [370, 495], "label": 1}],
             },
 
-            "plants-1" : {
-                "sam_prompt" :[{"type": "point", "data": [724, 740], "label": 1}],
+            "plants-1": {
+                "sam_prompt": [{"type": "point", "data": [724, 740], "label": 1}],
             },
         }
     }
@@ -55,6 +56,7 @@ def test_remove():
             expected = expected_path.read_bytes()
             expected_hash = hash_img(Image.open(BytesIO(expected)))
 
+            print(f"model: {model}")
             print(f"image_path: {image_path}")
             print(f"expected_path: {expected_path}")
             print(f"actual_hash: {actual_hash}")
@@ -63,3 +65,5 @@ def test_remove():
             print("---\n")
 
             assert actual_hash == expected_hash
+
+test_remove()
