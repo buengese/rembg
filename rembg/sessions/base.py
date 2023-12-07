@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import Dict, List, Tuple
 
 import numpy as np
@@ -32,7 +33,7 @@ class BaseSession:
             self.providers.extend(_providers)
 
         self.inner_session = ort.InferenceSession(
-            str(self.__class__.download_models(*args, **kwargs)),
+            str(self.__class__.get_model(*args, **kwargs)),
             providers=self.providers,
             sess_options=sess_opts,
         )
@@ -68,20 +69,26 @@ class BaseSession:
         raise NotImplementedError
 
     @classmethod
-    def checksum_disabled(cls, *args, **kwargs):
-        return os.getenv("MODEL_CHECKSUM_DISABLED", None) is not None
-
-    @classmethod
-    def u2net_home(cls, *args, **kwargs):
+    def rembg_home(cls, *args, **kwargs):
         return os.path.expanduser(
             os.getenv(
-                "U2NET_HOME", os.path.join(os.getenv("XDG_DATA_HOME", "~"), ".u2net")
+                "REMBG_HOME", os.path.join(os.getenv("XDG_DATA_HOME", "~"), ".rembg")
             )
         )
 
     @classmethod
-    def download_models(cls, *args, **kwargs):
-        raise NotImplementedError
+    def get_model(cls, *args, **kwargs):
+        fname = f"{cls.name(*args, **kwargs)}.onnx"
+
+        path = Path(cls.rembg_home(*args, **kwargs)).joinpath(fname)
+        if path.exists():
+            return path
+
+        path = Path(os.path.dirname(__file__)).parent.joinpath("models", fname)
+        if path.exists():
+            return path
+
+        raise FileNotFoundError(f"Model file {path} not found.")
 
     @classmethod
     def name(cls, *args, **kwargs):

@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 import numpy as np
@@ -73,22 +74,22 @@ class U2netCustomSession(BaseSession):
         return [mask]
 
     @classmethod
-    def download_models(cls, *args, **kwargs):
-        """
-        Download the model files.
-
-        Parameters:
-            *args: Additional positional arguments.
-            **kwargs: Additional keyword arguments.
-
-        Returns:
-            str: The absolute path to the model files.
-        """
+    def get_model(cls, *args, **kwargs):
         model_path = kwargs.get("model_path")
-        if model_path is None:
-            return
+        if model_path is not None:
+            return os.path.abspath(os.path.expanduser(model_path))
 
-        return os.path.abspath(os.path.expanduser(model_path))
+        fname = f"{cls.name(*args, **kwargs)}.onnx"
+        path = Path(cls.rembg_home(*args, **kwargs)).joinpath(fname)
+        if path.exists():
+            return path
+
+        path = Path(os.path.dirname(__file__)).parent.joinpath("models", fname)
+        if path.exists():
+            return path
+
+        raise FileNotFoundError(f"Model file {path} not found.")
+
 
     @classmethod
     def name(cls, *args, **kwargs):

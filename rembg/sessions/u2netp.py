@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 import numpy as np
@@ -41,27 +42,6 @@ class U2netpSession(BaseSession):
         mask = mask.resize(img.size, Image.LANCZOS)
 
         return [mask]
-
-    @classmethod
-    def download_models(cls, *args, **kwargs):
-        """
-        Downloads the U2netp model.
-
-        Returns:
-            str: The path to the downloaded model.
-        """
-        fname = f"{cls.name(*args, **kwargs)}.onnx"
-        pooch.retrieve(
-            "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx",
-            None
-            if cls.checksum_disabled(*args, **kwargs)
-            else "md5:8e83ca70e441ab06c318d82300c84806",
-            fname=fname,
-            path=cls.u2net_home(*args, **kwargs),
-            progressbar=True,
-        )
-
-        return os.path.join(cls.u2net_home(*args, **kwargs), fname)
 
     @classmethod
     def name(cls, *args, **kwargs):
