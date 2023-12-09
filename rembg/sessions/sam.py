@@ -1,6 +1,7 @@
 import logging
 import os
 from copy import deepcopy
+from pathlib import Path
 from typing import List, Tuple
 
 import cv2
@@ -35,8 +36,6 @@ class SamSession(BaseSession):
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
         """
-        self.model_name = "sam_vit_h_4b8939"
-
         self.target_size = 1024
         self.input_size = (684, 1024)
 
@@ -52,13 +51,8 @@ class SamSession(BaseSession):
         else:
             logging.warning("No available providers for ONNXRuntime")
 
-        paths = (
-            # relative to current file
-            os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), "models", f"{self.model_name}.encoder.onnx"),
-            os.path.join(os.path.join(os.path.dirname(__file__), os.pardir), "models", f"{self.model_name}.decoder.onnx"),
-        )
+        paths = self.get_models(*args, **kwargs)
 
-        # paths = self.__class__.download_models(*args, **kwargs)
         self.encoder = ort.InferenceSession(
             str(paths[0]),
             providers=providers,
@@ -106,6 +100,23 @@ class SamSession(BaseSession):
         neww = int(neww + 0.5)
         newh = int(newh + 0.5)
         return (newh, neww)
+
+    @classmethod
+    def get_models(cls, *args, **kwargs):
+        model_name = cls.name(*args, **kwargs)
+        rembg_home = cls.rembg_home(*args, **kwargs)
+        base_paths = [
+            Path(rembg_home),
+            Path(os.path.dirname(__file__)).parent.joinpath("models")
+        ]
+
+        for base_path in base_paths:
+            encoder_path = base_path.joinpath(f"{model_name}.encoder.onnx")
+            decoder_path = base_path.joinpath(f"{model_name}.decoder.onnx")
+            if encoder_path.exists() and decoder_path.exists():
+                return encoder_path, decoder_path
+
+        raise FileNotFoundError("Model files not found.")
 
     def apply_coords(self, coords: np.ndarray, original_size, target_length):
         """
@@ -309,4 +320,4 @@ class SamSession(BaseSession):
         Returns:
             str: The string value 'sam'.
         """
-        return "sam"
+        return "sam_vit_h_4b8939"
