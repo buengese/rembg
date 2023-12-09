@@ -9,7 +9,7 @@ from .sessions.u2net import U2netSession
 
 
 def new_session(
-    model_name: str = "u2net", providers=None, *args, **kwargs
+    model_type: str = "u2net", providers=None, *args, **kwargs
 ) -> BaseSession:
     """
     Create a new session object based on the specified model name.
@@ -20,7 +20,7 @@ def new_session(
     If the 'OMP_NUM_THREADS' environment variable is set, the 'inter_op_num_threads' option of 'sess_opts' is set to its value.
 
     Parameters:
-        model_name (str): The name of the model.
+        model_type (str): The type of the model.
         providers: The providers for the session.
         *args: Additional positional arguments.
         **kwargs: Additional keyword arguments.
@@ -31,7 +31,7 @@ def new_session(
     session_class: Type[BaseSession] = U2netSession
 
     for sc in sessions_class:
-        if sc.name() == model_name:
+        if sc.name() == model_type:
             session_class = sc
             break
 
@@ -41,4 +41,4 @@ def new_session(
         sess_opts.inter_op_num_threads = int(os.environ["OMP_NUM_THREADS"])
         sess_opts.intra_op_num_threads = int(os.environ["OMP_NUM_THREADS"])
 
-    return session_class(model_name, sess_opts, providers, *args, **kwargs)
+    return session_class(model_type, sess_opts, providers, *args, **kwargs)

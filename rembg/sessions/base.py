@@ -13,14 +13,14 @@ class BaseSession:
 
     def __init__(
         self,
-        model_name: str,
+        model_type: str,
         sess_opts: ort.SessionOptions,
         providers=None,
         *args,
         **kwargs
     ):
         """Initialize an instance of the BaseSession class."""
-        self.model_name = model_name
+        self.model_type = model_type
 
         self.providers = []
 

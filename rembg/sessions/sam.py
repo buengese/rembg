@@ -20,18 +20,18 @@ class SamSession(BaseSession):
     This class represents a session for the Sam model.
 
     Args:
-        model_name (str): The name of the model.
+        model_type (str): The name of the model.
         sess_opts (ort.SessionOptions): The session options.
         *args: Variable length argument list.
         **kwargs: Arbitrary keyword arguments.
     """
 
-    def __init__(self, model_name: str, sess_opts: ort.SessionOptions, *args, **kwargs):
+    def __init__(self, model_type: str, sess_opts: ort.SessionOptions, *args, **kwargs):
         """
         Initialize a new SamSession with the given model name and session options.
 
         Args:
-            model_name (str): The name of the model.
+            model_type (str): The name of the model.
             sess_opts (ort.SessionOptions): The session options.
             *args: Variable length argument list.
             **kwargs: Arbitrary keyword arguments.
@@ -103,7 +103,7 @@ class SamSession(BaseSession):
 
     @classmethod
     def get_models(cls, *args, **kwargs):
-        model_name = cls.name(*args, **kwargs)
+        model_name = kwargs.get("model_name", "sam_vit_h_4b8939")
         rembg_home = cls.rembg_home(*args, **kwargs)
         base_paths = [
             Path(rembg_home),
@@ -304,7 +304,6 @@ class SamSession(BaseSession):
         mask = Image.fromarray(mask).convert("L")
         return [mask]
 
-
     @classmethod
     def name(cls, *args, **kwargs):
         """
@@ -320,4 +319,4 @@ class SamSession(BaseSession):
         Returns:
             str: The string value 'sam'.
         """
-        return "sam_vit_h_4b8939"
+        return "sam"
