@@ -7,8 +7,6 @@ from typing import List, Tuple
 import cv2
 import numpy as np
 import onnxruntime as ort
-import pooch
-from jsonschema import validate
 from PIL import Image
 from PIL.Image import Image as PILImage
 
