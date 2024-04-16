@@ -2,7 +2,6 @@ import os
 from typing import List
 
 import numpy as np
-import pooch
 from PIL import Image
 from PIL.Image import Image as PILImage
 
